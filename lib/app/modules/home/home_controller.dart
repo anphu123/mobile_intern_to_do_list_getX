@@ -1,21 +1,25 @@
 import 'package:get/get.dart';
 
-import '../../core/base/base_controller.dart';
+import '../../core/errors/error_handler.dart';
 import '../../core/utils/validators.dart';
 import '../../data/model/todo_model.dart';
 
-class HomeController extends BaseController {
+class HomeController extends GetxController {
   final todos = <TodoModel>[].obs;
 
-  Future<void> addTodo(String title) => runSafely(() async {
-        final validTitle = Validators.todoTitle(title);
-        todos.add(
-          TodoModel(
-            id: DateTime.now().microsecondsSinceEpoch.toString(),
-            title: validTitle,
-          ),
-        );
-      });
+  void addTodo(String title) {
+    try {
+      final validTitle = Validators.todoTitle(title);
+      todos.add(
+        TodoModel(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          title: validTitle,
+        ),
+      );
+    } catch (e) {
+      ErrorHandler.handle(e);
+    }
+  }
 
   void toggleTodo(String id) {
     final index = todos.indexWhere((todo) => todo.id == id);
